@@ -226,7 +226,9 @@
 </style>
 
 <script>
+  // Replace jQuery selectors with vanilla JavaScript
   calculateDiscount();
+
   function calculateProgress(currentVal, targetVal) {
       var progressBar = document.querySelectorAll('.cart-discountThreshold__progress');
       var progressNum = document.querySelectorAll('.cart-discount__num');
@@ -237,12 +239,12 @@
         var result = Math.round(30 * currentVal / {{settings.discount_1}});
       } else if (currentVal > {{settings.discount_1}} && currentVal < {{settings.discount_2}}) {
         var result = Math.round(65 * currentVal / {{settings.discount_2}});
-      }else {
+      } else {
         var result = Math.round(100 * currentVal / targetVal);
       }
       progressBar.forEach(function(el){
         el.setAttribute('style', "width: ".concat(result, "%"));
-      })
+      });
       var newProgressNum = targetVal - currentVal;
       if(newProgressNum <= 0){
         successMsg.forEach(function(el){
@@ -265,185 +267,167 @@
           el.textContent = newProgressNum;
         });
       }
-    };
+  }
+
   function calculateDiscount(){
-    const laodingBar = document.querySelector('.cart-drawer .loading__spinner');
-    laodingBar.classList.remove('hidden');
+    const loadingBar = document.querySelector('.cart-drawer .loading__spinner');
+    loadingBar.classList.remove('hidden');
+    
     fetch('/cart.js')
-    .then(response => response.json())
-    .then(data => {
-     vartotal_cartPrice = data.total_price;
-     var total_price = formatMoney(vartotal_cartPrice);
-     total_price = parseFloat(total_price.replace(/[^0-9.-]+/g,""));
-     let variantData = [];
-     var items = data.items;
+      .then(response => response.json())
+      .then(data => {
+        let vartotal_cartPrice = data.total_price;
+        let total_price = formatMoney(vartotal_cartPrice);
+        total_price = parseFloat(total_price.replace(/[^0-9.-]+/g,""));
+        let variantData = [];
+        let items = data.items;
 
-      
-    const discountItems = document.querySelectorAll('.cart_discount__item');
-      if (discountItems.length > 0) {
-        discountItems.forEach(discount_item => {
-          let price = parseFloat(discount_item.getAttribute('data-price'));
-          let id = parseInt(discount_item.getAttribute('data-id'));
-          let alreadyExist = false;
-          if (id !== null) {
-            items.forEach(item => {
-              var varaint_id = parseInt(item.variant_id);
-  
-              if (varaint_id == id) {
-                alreadyExist = true;
-                $('.cart_discount__item[data-id="'+id+'"]').addClass("active_discount");
-              }
-
-            });
-          }
-
-          if (alreadyExist == false && total_price >= price) {
-            let dataObject = {
-              id: id,
-              qty: 1
+        const discountItems = document.querySelectorAll('.cart_discount__item');
+        if (discountItems.length > 0) {
+          discountItems.forEach(discount_item => {
+            let price = parseFloat(discount_item.getAttribute('data-price'));
+            let id = parseInt(discount_item.getAttribute('data-id'));
+            let alreadyExist = false;
+            
+            if (id !== null) {
+              items.forEach(item => {
+                let varaint_id = parseInt(item.variant_id);
+                if (varaint_id == id) {
+                  alreadyExist = true;
+                  document.querySelector(`.cart_discount__item[data-id="${id}"]`).classList.add("active_discount");
+                }
+              });
             }
-            if (!variantData.some(variant => variant.id === id)) {
+
+            if (alreadyExist == false && total_price >= price) {
+              let dataObject = {
+                id: id,
+                qty: 1
+              };
+              if (!variantData.some(variant => variant.id === id)) {
+                variantData.push(dataObject);
+              }
+            } else if (alreadyExist == true && price >= total_price) {
+              let dataObject = {
+                id: id,
+                qty: 0
+              };
               variantData.push(dataObject);
             }
-          } else if (alreadyExist == true && price >= total_price) {
-            let dataObject = {
-              id: id,
-              qty: 0
-            }
-            variantData.push(dataObject);
-          }
-        })
+          });
 
-        if(variantData.length == 0) {
-          laodingBar.classList.add('hidden');
-        }
-        
-        // Function to add items to the cart
-        async function addItemsToCart(variantData) {
-          for (let index = 0; index < variantData.length; index++) {
-            const { id, qty } = variantData[index];
-            const formData = { items: [{ id: id, quantity: qty }] };
-        
-            try {
-              if (qty == 1) {
-                let response = await fetch(window.Shopify.routes.root + 'cart/add.js', {
-                  method: 'POST',
-                  headers: {
-                    'Content-Type': 'application/json'
-                  },
-                  body: JSON.stringify(formData)
-                });
-        
-                const data = await response.json();
-                if (data.items) {
-                  // Handle success
-                  $('.cart_discount__item[data-id="'+id+'"]').addClass("active_discount");
-                } else if (data.status === 422) {
-                  alert(data.message);
-                }
-              } else if (qty == 0) {
-        
-                // Convert $.ajax to a promise and await it
-                await new Promise((resolve, reject) => {
-                  $.ajax({
-                    type: 'POST',
-                    url: '/cart/change.js',
-                    dataType: 'json',
-                    data: {
+          if(variantData.length == 0) {
+            loadingBar.classList.add('hidden');
+          }
+          
+          // Function to add items to the cart
+          async function addItemsToCart(variantData) {
+            for (let index = 0; index < variantData.length; index++) {
+              const { id, qty } = variantData[index];
+              const formData = { items: [{ id: id, quantity: qty }] };
+          
+              try {
+                if (qty == 1) {
+                  let response = await fetch(window.Shopify.routes.root + 'cart/add.js', {
+                    method: 'POST',
+                    headers: {
+                      'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(formData)
+                  });
+          
+                  const data = await response.json();
+                  if (data.items) {
+                    document.querySelector(`.cart_discount__item[data-id="${id}"]`).classList.add("active_discount");
+                  } else if (data.status === 422) {
+                    alert(data.message);
+                  }
+                } else if (qty == 0) {
+                  const response = await fetch('/cart/change.js', {
+                    method: 'POST',
+                    headers: {
+                      'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
                       'id': id,
                       'quantity': qty
-                    },
-                    success: (data) => {
-                      resolve(data);
-                      $('.cart_discount__item[data-id="'+id+'"]').removeClass("active_discount");
-                    },
-                    error: (xhr, status, error) => {
-                      console.error(error);
-                      reject(error);
-                    }
+                    })
                   });
-                });
+                  
+                  const data = await response.json();
+                  document.querySelector(`.cart_discount__item[data-id="${id}"]`).classList.remove("active_discount");
+                }
+              } catch (error) {
+                console.error(`Error adding item with ID ${id}:`, error);
               }
-            } catch (error) {
-              console.error(`Error adding item with ID ${id}:`, error);
-            }
-        
-            if (index === variantData.length - 1) {
-        
-              // Fetch updated cart data
-              fetch(window.location.href)
-                .then((response) => response.text())
-                .then((responseText) => {
-                  const htmlData = new DOMParser().parseFromString(responseText, 'text/html');
-                  const cartItemshtml = htmlData.querySelector('#CartDrawer .cart-drawer__form');
-                  $('#CartDrawer .totals__total-value').text($(htmlData).find('#CartDrawer .totals__total-value').text());
-                  $('.cart-count-bubble').html($(htmlData).find('.cart-count-bubble').html());
-                  document.querySelector('#CartDrawer .cart__drawer--form').innerHTML = cartItemshtml.innerHTML;
-                })
-                .catch(e => {
-                  console.error(e);
-                })
-                .finally(() => {
-                  // alert("All items have been added to the cart.");
-                  laodingBar.classList.add('hidden');
-                  var discount_items = $('.cart_discount__item:not(.active_discount)');
-                  fetch('/cart.js')
-                  .then(response => response.json())
-                  .then(data => {
-                    vartotal_cartPrice = data.total_price;
-                   var total_price_new = formatMoney(vartotal_cartPrice);
-                   total_price_new = parseFloat(total_price_new.replace(/[^0-9.-]+/g,""));
-                      if (total_price_new == 0) {
-                        document.querySelectorAll(".cart-discount__wrapper")[0].style.display = 'none';
-                      } else if (total_price_new >= {{settings.discount_2}}) {
-                        document.querySelectorAll(".cart-discount__wrapper")[0].style.display = 'block';
-                        // calculateProgress(total_price, {{settings.discount_total_price}});
-                        calculateProgress(total_price_new, {{settings.discount_2}} ); 
-                      } else {
-                         calculateProgress(total_price, {{settings.discount_total_price}});
-                      }
-                    discount_items.each(function(index, newitem){
-                        var newItemPrice = parseInt($(newitem).attr('data-price'));
-                        if(total_price_new > newItemPrice) {
-                          console.log(newItemPrice+"newItemPrice");
-                          calculateDiscount();
-                        }
-                    });
-                  });
+          
+              if (index === variantData.length - 1) {
+                // Fetch updated cart data
+                fetch(window.location.href)
+                  .then((response) => response.text())
+                  .then((responseText) => {
+                    const htmlData = new DOMParser().parseFromString(responseText, 'text/html');
+                    const cartItemshtml = htmlData.querySelector('#CartDrawer .cart-drawer__form');
+                    document.querySelector('#CartDrawer .totals__total-value').textContent = 
+                      htmlData.querySelector('#CartDrawer .totals__total-value').textContent;
+                    document.querySelector('.cart-count-bubble').innerHTML = 
+                      htmlData.querySelector('.cart-count-bubble').innerHTML;
+                    document.querySelector('#CartDrawer .cart__drawer--form').innerHTML = cartItemshtml.innerHTML;
+                  })
+                  .catch(e => {
+                    console.error(e);
+                  })
+                  .finally(() => {
+                    loadingBar.classList.add('hidden');
+                    const discount_items = document.querySelectorAll('.cart_discount__item:not(.active_discount)');
                     
-                });
+                    fetch('/cart.js')
+                      .then(response => response.json())
+                      .then(data => {
+                        let vartotal_cartPrice = data.total_price;
+                        let total_price_new = formatMoney(vartotal_cartPrice);
+                        total_price_new = parseFloat(total_price_new.replace(/[^0-9.-]+/g,""));
+                        
+                        if (total_price_new == 0) {
+                          document.querySelectorAll(".cart-discount__wrapper")[0].style.display = 'none';
+                        } else if (total_price_new >= {{settings.discount_2}}) {
+                          document.querySelectorAll(".cart-discount__wrapper")[0].style.display = 'block';
+                          calculateProgress(total_price_new, {{settings.discount_2}}); 
+                        } else {
+                          calculateProgress(total_price, {{settings.discount_total_price}});
+                        }
+                        
+                        discount_items.forEach(newitem => {
+                          const newItemPrice = parseInt(newitem.getAttribute('data-price'));
+                          if(total_price_new > newItemPrice) {
+                            console.log(newItemPrice + "newItemPrice");
+                            calculateDiscount();
+                          }
+                        });
+                      });
+                  });
+              }
             }
           }
+          
+          // Call the function to process the variantData array
+          addItemsToCart(variantData);
         }
         
-        // Example: Call the function to process the variantData array
-        addItemsToCart(variantData);
-
-        
-      }
-      
-      if (total_price == 0) {
-        document.querySelectorAll(".cart-discount__wrapper")[0].style.display = 'none';
-      } else if (total_price >= {{ settings.discount_2}}){
-        document.querySelectorAll(".cart-discount__wrapper")[0].style.display = 'block';
-        // calculateProgress(total_price, {{settings.cart_discount_theshold_world}});
-        // calculateProgress(total_price,{{ settings.discount_total_price}} ); 
-        calculateProgress(total_price, {{settings.discount_2}} ); 
-      } else {
-         calculateProgress(total_price,{{ settings.discount_total_price}} ); 
-      }
-
+        if (total_price == 0) {
+          document.querySelectorAll(".cart-discount__wrapper")[0].style.display = 'none';
+        } else if (total_price >= {{settings.discount_2}}) {
+          document.querySelectorAll(".cart-discount__wrapper")[0].style.display = 'block';
+          calculateProgress(total_price, {{settings.discount_2}}); 
+        } else {
+          calculateProgress(total_price, {{settings.discount_total_price}}); 
+        }
       });
-    }
-  // function formatMoney(cents) {
-  //   var dollars = Math.floor(cents / 100);
-  //   var centsPart = cents % 100;
-  //   return "$" + dollars + "." + (centsPart < 10 ? "0" : "") + centsPart;
-  // }
+  }
+
   function formatMoney(cents) {
-    // debugger
-    var dollars = cents / 100;
-    var centsPart = (cents % 100).toFixed(2);
+    let dollars = cents / 100;
+    let centsPart = (cents % 100).toFixed(2);
     return "{{ cart.currency.symbol }}" + dollars + "." + (centsPart < 10 ? "0" : "");
-}
+  }
 </script>
