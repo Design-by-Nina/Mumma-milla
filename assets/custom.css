@@ -1600,5 +1600,10 @@ body .mega-menu[open] .mega-menu__content {
     font-size: 12px;
     text-transform: uppercase;
     letter-spacing: .4px;
-    margin-top: 7px;
+    /* margin-top: 7px; */
+}
+.price--show-badge {
+  display: flex;
+  align-items: center;
+  gap: 0.25em;
 }

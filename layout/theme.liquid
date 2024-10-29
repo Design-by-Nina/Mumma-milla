@@ -36,6 +36,23 @@
 
   {% render 'meta-tags' %}
 
+  <!-- Inline critical CSS -->
+  <style>
+    .js-loading {
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+    .js-loading.loaded {
+      opacity: 1;
+    }
+    /* Performance: LCP Reduction */
+    .slideshow__image {
+      width: 100%;
+      height: auto;
+      object-fit: cover;
+    }
+  </style>
+
   <!-- Script loading error handling -->
   <script>
     window.addEventListener('error', function(e) {
@@ -56,6 +73,9 @@
 
   <!-- jQuery and core scripts -->
   <script src="https://code.jquery.com/jquery-3.7.1.min.js" defer crossorigin="anonymous"></script>
+  <script src="{{ 'cart-utilities.js' | asset_url }}" defer="defer"></script>
+  <script src="{{ 'cart.js' | asset_url }}" defer="defer"></script>
+  <script src="{{ 'cart-drawer.js' | asset_url }}" defer="defer"></script>
   <script src="{{ 'slick.min.js' | asset_url }}" defer></script>
   <script src="{{ 'constants.js' | asset_url }}" defer></script>
   <script src="{{ 'pubsub.js' | asset_url }}" defer></script>
@@ -63,24 +83,6 @@
   {%- if settings.animations_reveal_on_scroll -%}
     <script src="{{ 'animations.js' | asset_url }}" defer></script>
   {%- endif -%}
-
-  <!-- Inline critical CSS -->
-  <style>
-    /* Performance: LCP Reduction */
-    .slideshow__image {
-      width: 100%;
-      height: auto;
-      object-fit: cover;
-    }
-    
-    .js-loading {
-      opacity: 0;
-      transition: opacity 0.3s;
-    }
-    .js-loading.loaded {
-      opacity: 1;
-    }
-  </style>
 
   {{ content_for_header }}
 
@@ -199,6 +201,9 @@
     <link rel="stylesheet" href="{{ 'slick.min.css' | asset_url }}">
     <link rel="stylesheet" href="{{ 'slick-theme.min.css' | asset_url }}">
   </noscript>
+  
+
+
 </head>
 
 <body class="js-loading template-{{ template | replace: '.', ' ' | truncatewords: 1, '' | handle }} template-{{ template | replace: '.', '-' | handle }} gradient{% if settings.animations_hover_elements != 'none' %} animate--hover-{{ settings.animations_hover_elements }}{% endif %}">

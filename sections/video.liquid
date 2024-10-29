@@ -128,7 +128,7 @@
         {%- if poster != null -%}
           {{
               poster
-              | image_url: width: 1200, format: 'pjpg'
+              | image_url: width: 1200
               | image_tag: 
                 loading: 'lazy',
                 sizes: '(min-width: 1200px) 1200px, 100vw',

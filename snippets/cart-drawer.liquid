@@ -8,11 +8,8 @@
 {{ 'quantity-popover.css' | asset_url | stylesheet_tag }}
 {{ 'component-card.css' | asset_url | stylesheet_tag }}
 
-<script src="{{ 'cart.js' | asset_url }}" defer="defer"></script>
+{% comment %} <script src="{{ 'cart.js' | asset_url }}" defer="defer"></script> {% endcomment %}
 <script src="{{ 'quantity-popover.js' | asset_url }}" defer="defer"></script>
-
-
-
 
 {{ 'component-card.css' | asset_url | stylesheet_tag }}
 {{ 'component-price.css' | asset_url | stylesheet_tag }}
@@ -312,9 +309,22 @@ button.drawer__close {
                           <a href="{{ item.url }}" class="cart-item__name h4 break">
                             {{- item.product.title | escape -}}
                           </a>
-                          <cart-remove-button
+
+                          <cart-remove-button class="cart-item__remove-button" 
+                            id="CartDrawer-Remove-{{ item.index | plus: 1 }}"
+                            data-index="{{ item.index | plus: 1 }}"
+                            data-variant-id="{{ item.variant_id }}">
+                            <button type="button"
+                                    class="button button--tertiary cart-remove-button"
+                                    aria-label="Remove {{ item.title }}">
+                                    <svg class="" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 12 12"><path stroke="currentColor" stroke-linecap="square" stroke-width="1.2" d="m3 3 6 6M9 3 3 9"></path></svg>
+                            </button>
+                          </cart-remove-button>
+                          {% comment %} <cart-remove-button
+                                class="cart-item__remove-button" 
                                 id="CartDrawer-Remove-{{ item.index | plus: 1 }}"
                                 data-index="{{ item.index | plus: 1 }}"
+                                data-variant-id="{{ item.variant_id }}"
                               >
                                 <button
                                   type="button"
@@ -322,10 +332,10 @@ button.drawer__close {
                                   aria-label="{{ 'sections.cart.remove_title' | t: title: item.title }}"
                                   data-variant-id="{{ item.variant.id }}"
                                 >
-                                  {% comment %}{% render 'icon-remove' %} {% endcomment %}
+                                  {% render 'icon-remove' %}
                                   <svg class="" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 12 12"><path stroke="currentColor" stroke-linecap="square" stroke-width="1.2" d="m3 3 6 6M9 3 3 9"></path></svg>
                                 </button>
-                              </cart-remove-button>
+                              </cart-remove-button> {% endcomment %}
                           <div class="amr-price-option-wrapper">
                               <div class="cart-item__price-wrapper">
                             {%- if item.original_line_price != item.final_line_price -%}
