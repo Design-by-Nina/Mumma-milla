@@ -1,6 +1,102 @@
-<!-- Free discount progress markup -->
- {{ "/services/javascripts/currencies.js" | script_tag }}
-<div class="cart-discount__wrapper">
+<script src="{{ 'cart-discount-progress.js' | asset_url }}" defer="defer"></script>
+
+<div class="cart-shipping__wrapper" style="display:none">
+  <p class="cart-shipping__numOuter">
+    {{ settings.cart_top_first_text }}
+    <b>$<span class="cart-shipping__num"></span></b> {{ settings.cart_top_last_text }}
+  </p>
+  <p class="cart-shipping__success" style="display:none">{{ settings.cart_discount_success_message }}</p>
+  <div class="cart-shippingThreshold__bar">
+    <span class="cart-shippingThreshold__progress"></span>
+  </div>
+  <div class="bar-bottom">{{ settings.cart_bottom }}</div>
+</div>
+
+<div class="cart-discount__wrapper" style="display:none">
+  <div class="cart-discountThreshold__bar">
+    <span class="cart-discountThreshold__progress"></span>
+    
+    {% assign product_one = settings.discount_product_1 %}
+    {% if settings.discount_product_1 != blank %}
+      <div class="cart_discount__item cart_discount__item-one" 
+           data-price="{{ settings.discount_1 }}" 
+           data-id="{{ product_one.selected_or_first_available_variant.id }}">
+        <div class="cdi__image">
+          <img src="{{ settings.icon_1 | image_url: width: 100, height: 100, format: 'pjpg' }}" width="100" height="100" loading="lazy">
+        </div>
+        <div class="cdi__content">
+          <div class="cdi__text">{{ settings.text_1 }}</div>
+        </div>
+        <div class="cdi__product">
+          <div class="cdip_image">
+            <img src="{{ product_one.featured_image | image_url: width: 150, height: 150, format: 'pjpg' }}" width="150" height="150" loading="lazy">
+          </div>
+        </div>
+      </div>
+    {% endif %}
+
+    {% assign product_two = settings.discount_product_2 %}
+    {% if settings.discount_product_2 != blank %}
+      <div class="cart_discount__item cart_discount__item-two" 
+           data-price="{{ settings.discount_2 }}" 
+           data-id="{{ product_two.selected_or_first_available_variant.id }}">
+        <div class="cdi__image">
+          <img src="{{ settings.icon_2 | image_url: width: 100, height: 100, format: 'pjpg' }}" width="100" height="100" loading="lazy">
+        </div>
+        <div class="cdi__content">
+          <div class="cdi__text">{{ settings.text_2 }}</div>
+        </div>
+        <div class="cdi__product">
+          <div class="cdip_image">
+            <img src="{{ product_two.featured_image | image_url: width: 150, height: 150, format: 'pjpg' }}" width="150" height="150" loading="lazy">
+          </div>
+        </div>
+      </div>
+    {% endif %}
+
+    {% assign product_three = settings.discount_product_3 %}
+    {% if settings.discount_product_3 != blank %}
+      <div class="cart_discount__item cart_discount__item-three" 
+           data-price="{{ settings.discount_3 }}" 
+           data-id="{{ product_three.selected_or_first_available_variant.id }}">
+        <div class="cdi__image">
+          <img src="{{ settings.icon_3 | image_url: width: 100, height: 100, format: 'pjpg' }}" width="100" height="100" loading="lazy">
+        </div>
+        <div class="cdi__content">
+          <div class="cdi__text">{{ settings.text_3 }}</div>
+        </div>
+        <div class="cdi__product">
+          <div class="cdip_image">
+            <img src="{{ product_three.featured_image | image_url: width: 150, height: 150, format: 'pjpg' }}" width="150" height="150" loading="lazy">
+          </div>
+        </div>
+      </div>
+    {% endif %}
+
+    {% assign product_four = settings.discount_product_4 %}
+    {% if settings.discount_product_4 != blank %}
+      <div class="cart_discount__item cart_discount__item-four" 
+           data-price="{{ settings.discount_4 }}" 
+           data-id="{{ product_four.selected_or_first_available_variant.id }}">
+        <div class="cdi__image">
+          <img src="{{ settings.icon_4 | image_url: width: 100, height: 100, format: 'pjpg' }}" width="100" height="100" loading="lazy">
+        </div>
+        <div class="cdi__content">
+          <div class="cdi__text">{{ settings.text_4 }}</div>
+        </div>
+        <div class="cdi__product">
+          <div class="cdip_image">
+            <img src="{{ product_four.featured_image | image_url: width: 150, height: 150, format: 'pjpg' }}" width="150" height="150" loading="lazy">
+          </div>
+        </div>
+      </div>
+    {% endif %}
+  </div>
+</div>
+
+{% comment %} {{ "/services/javascripts/currencies.js" | script_tag }} {% endcomment %}
+
+{% comment %} <div class="cart-discount__wrapper">
   <!-- <p class="cart-discount__numOuter">
     <svg width="15" height="11" viewBox="0 0 15 11" fill="none" xmlns="http://www.w3.org/2000/svg">
       <rect y="6.41431" width="2" height="6.29215" rx="1" transform="rotate(-45 0 6.41431)" fill="black"/>
@@ -18,199 +114,183 @@
     </span> -->
     {% assign product_one = settings.discount_product_1 %}
     {% if settings.discount_product_1 != blank %}
-    <div class="cart_discount__item cart_discount__item-one" data-price="{{ settings.discount_1 }}" data-id="{{ product_one.selected_or_first_available_variant.id }}">
-      <div class="cdi__image">
-        <img src="{{ settings.icon_1 | img_url: '100x100', format: 'pjpg' }}">
-      </div>
-      <div class="cdi__content">
-        <div class="cdi__text">{{ settings.text_1 }}</div>
-      </div>
-      <div class="cdi__product">
-        <div class="cdip_image">
-          <img src="{{ product_one.featured_image | img_url: '150x150', format: 'pjpg' }} ">
+      <div class="cart_discount__item cart_discount__item-one" data-price="{{ settings.discount_1 }}" data-id="{{ product_one.selected_or_first_available_variant.id }}">
+        <div class="cdi__image">
+          <img src="{{ settings.icon_1 | img_url: '100x100', format: 'pjpg' }}">
+        </div>
+        <div class="cdi__content">
+          <div class="cdi__text">{{ settings.text_1 }}</div>
+        </div>
+        <div class="cdi__product">
+          <div class="cdip_image">
+            <img src="{{ product_one.featured_image | img_url: '150x150', format: 'pjpg' }} ">
+          </div>
         </div>
       </div>
-    </div>
     {% endif %}
     {% assign product_two = settings.discount_product_2 %}   
     {% if settings.discount_product_2 != blank  %}
-    <div class="cart_discount__item cart_discount__item-two" data-price="{{ settings.discount_2 }}" data-id="{{ product_two.selected_or_first_available_variant.id }}">
-      <div class="cdi__image">
-        <img src="{{ settings.icon_2 | img_url: '100x100', format: 'pjpg' }}">
-      </div>
-      <div class="cdi__content">
-        <div class="cdi__text">{{ settings.text_2 }}</div>
-      </div>
-      <div class="cdi__product">
+      <div class="cart_discount__item cart_discount__item-two" data-price="{{ settings.discount_2 }}" data-id="{{ product_two.selected_or_first_available_variant.id }}">
+        <div class="cdi__image">
+          <img src="{{ settings.icon_2 | img_url: '100x100', format: 'pjpg' }}">
+        </div>
+        <div class="cdi__content">
+          <div class="cdi__text">{{ settings.text_2 }}</div>
+        </div>
+        <div class="cdi__product">
 
-        <div class="cdip_image">
-          <img src="{{ product_two.featured_image | img_url: '150x150' }} ">
+          <div class="cdip_image">
+            <img src="{{ product_two.featured_image | img_url: '150x150' }} ">
+          </div>
         </div>
       </div>
-    </div>
-{% endif %}    
+    {% endif %}    
     {% assign product_three = settings.discount_product_3 %}  
     {% if settings.discount_product_3 != blank  %}
-    <div class="cart_discount__item cart_discount__item-three" data-price="{{ settings.discount_3 }}" data-id="{{ product_three.selected_or_first_available_variant.id }}">
-      <div class="cdi__image">
-        <img src="{{ settings.icon_3 | img_url: '100x100', format: 'pjpg' }}">
-      </div>
-      <div class="cdi__content">
-        <div class="cdi__text">{{ settings.text_3 }}</div>
-      </div>
-      <div class="cdi__product">
-        <div class="cdip_image">
-          <img src="{{ product_three.featured_image | img_url: '150x150', format: 'pjpg' }} ">
+      <div class="cart_discount__item cart_discount__item-three" data-price="{{ settings.discount_3 }}" data-id="{{ product_three.selected_or_first_available_variant.id }}">
+        <div class="cdi__image">
+          <img src="{{ settings.icon_3 | img_url: '100x100', format: 'pjpg' }}">
+        </div>
+        <div class="cdi__content">
+          <div class="cdi__text">{{ settings.text_3 }}</div>
+        </div>
+        <div class="cdi__product">
+          <div class="cdip_image">
+            <img src="{{ product_three.featured_image | img_url: '150x150', format: 'pjpg' }} ">
+          </div>
         </div>
       </div>
-    </div>
-{% endif %}
+    {% endif %}
     
 
     {% assign product_four = settings.discount_product_4 %}
     {% if settings.discount_product_4 != blank  %}
-    <div class="cart_discount__item cart_discount__item-four" data-price="{{ settings.discount_4 }}" data-id="{{ product_four.selected_or_first_available_variant.id }}">
-      <div class="cdi__image">
-        <img src="{{ settings.icon_4 | img_url: '100x100', format: 'pjpg' }}">
-      </div>
-      <div class="cdi__content">
-        <div class="cdi__text">{{ settings.text_4 }}</div>
-      </div>
-      <div class="cdi__product">
-        <div class="cdip_image">
-          <img src="{{ product_four.featured_image | img_url: '150x150', format: 'pjpg' }} ">
+      <div class="cart_discount__item cart_discount__item-four" data-price="{{ settings.discount_4 }}" data-id="{{ product_four.selected_or_first_available_variant.id }}">
+        <div class="cdi__image">
+          <img src="{{ settings.icon_4 | img_url: '100x100', format: 'pjpg' }}">
+        </div>
+        <div class="cdi__content">
+          <div class="cdi__text">{{ settings.text_4 }}</div>
+        </div>
+        <div class="cdi__product">
+          <div class="cdip_image">
+            <img src="{{ product_four.featured_image | img_url: '150x150', format: 'pjpg' }} ">
+          </div>
         </div>
       </div>
-    </div>
-      {% endif %}
-    
+    {% endif %}
   </div>
-</div>
+</div> {% endcomment %}
+
 {% assign total_disocunt_price = settings.discount_total_price %}
 {% assign discount_one = settings.discount_1 | times: 1.0 | divided_by : total_disocunt_price | times: 100   %}
 {% assign discount_two = settings.discount_2 | times: 1.0 | divided_by : total_disocunt_price | times: 100   %}
 {% assign discount_three = settings.discount_3 | times: 1.0 | divided_by : total_disocunt_price | times: 100   %}
 {% assign discount_four = settings.discount_4 | times: 1.0 | divided_by : total_disocunt_price | times: 100   %}
+
 <style>
-    .cart-discount__wrapper {
-      padding: 20px 15px 15px 0;
-      max-width: 700px;
-      margin: 0 auto;
-      width: 100%;
-      height: 162px;
-    }
+  .cart-discount__wrapper {
+    padding: 20px 15px 15px 0;
+    max-width: 700px;
+    margin: 0 auto;
+    width: 100%;
+    height: 162px;
+  }
   p.cart-discount__success, .cart-discount__numOuter {
     margin-bottom: 0;
     margin-top: 10px;
     font-size: 14px;
     color: #000;
     text-transform: uppercase !important;
-}
-    .first_threshold {
-      margin-top: 9px;
-      position: absolute;
-      left: -12px;
   }
-    .cart-discountThreshold__bar {
-      position: relative;
-      /*  Progress bar background color  */
-      background-color: {{settings.cart_discount_bar_color}};
-      height: .5rem;
-      border-radius: 30px;
-      border: 1px solid #000;
-      /* overflow: hidden; */
-    }
-    /* span.cart-discount__num {
-        font-weight: 800;
-    } */
-    /* .cart-discountThreshold__progress:before {
-      content: url('https://cdn.shopify.com/s/files/1/0630/9783/1675/files/icon-logo.png?v=1692470164');
-      position: absolute;
-      top: -24px;
-      right: 0px;
-      height: 15px;
-      width: 15px;
-  } */
-    .cart-discountThreshold__progress {
-      position: absolute;
-      top: 0;
-      left: 0;
-      min-width: 0;
-      max-width: 100%;
-      height: 100%;
-      display: block;
-      /*  Progress bar fill color  */
-      background-color:{{settings.cart_discount_bar_fillcolor}};
-    }
-
-
-     .cart-discountThreshold__bar-line {
-      position: absolute;
-      top: 0;
-      width: 2px;
-      height: 100%;
-      background-color: {{settings.cart_discount_bar_fillcolor}};
-    }
-.cart_discount__item {
-  position: absolute;
-  top: -18px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-}
-.cart_discount__item-one {
-    left: calc({{ discount_one }}% - 30px);
-    left: 30%;
-}
-.cart_discount__item-two {
-  left: calc({{ discount_two }}% - 30px);
-  left: 65%;
-}
-.cart_discount__item-three {
-  left: calc({{ discount_three }}% - 30px);
-  left: 54%;
-}
-.cart_discount__item-four {
-  left: calc({{ discount_four }}% - 30px);
-  left: 75%;
-}
-.cdi__image {
-  height: 38px;
-  width: 38px;
-  border: 1px solid #C7C7C7;
-  background: #fff;
-  border-radius: 50%;
-  overflow: hidden;
-  padding: 0 3px;
-}
-
-.cdi__image img {
-  height: 100%;
-  width: 100%;
-}
-.cdip_image {
-  width: 60px;
-  height: 60px;
-}
-
+  .first_threshold {
+    margin-top: 9px;
+    position: absolute;
+    left: -12px;
+  }
+  .cart-discountThreshold__bar {
+    position: relative;
+    /*  Progress bar background color  */
+    background-color: {{settings.cart_discount_bar_color}};
+    height: .5rem;
+    border-radius: 30px;
+    border: 1px solid #000;
+  }
+  .cart-discountThreshold__progress {
+    position: absolute;
+    top: 0;
+    left: 0;
+    min-width: 0;
+    max-width: 100%;
+    height: 100%;
+    display: block;
+    /*  Progress bar fill color  */
+    background-color:{{settings.cart_discount_bar_fillcolor}};
+  }
+  .cart-discountThreshold__bar-line {
+    position: absolute;
+    top: 0;
+    width: 2px;
+    height: 100%;
+    background-color: {{settings.cart_discount_bar_fillcolor}};
+  }
+  .cart_discount__item {
+    position: absolute;
+    top: -18px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+  .cart_discount__item-one {
+      left: calc({{ discount_one }}% - 30px);
+      left: 30%;
+  }
+  .cart_discount__item-two {
+    left: calc({{ discount_two }}% - 30px);
+    left: 65%;
+  }
+  .cart_discount__item-three {
+    left: calc({{ discount_three }}% - 30px);
+    left: 54%;
+  }
+  .cart_discount__item-four {
+    left: calc({{ discount_four }}% - 30px);
+    left: 75%;
+  }
+  .cdi__image {
+    height: 38px;
+    width: 38px;
+    border: 1px solid #C7C7C7;
+    background: #fff;
+    border-radius: 50%;
+    overflow: hidden;
+    padding: 0 3px;
+  }
+  .cdi__image img {
+    height: 100%;
+    width: 100%;
+  }
+  .cdip_image {
+    width: 60px;
+    height: 60px;
+  }
   .active_discount .cdip_image {
     display: block;
   }
-  
-.cdip_image img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-}
-.cdi__text {
-  max-width: 60px;
-  text-align: center;
-  font-size: 12px;
-  line-height: 12px;
-  padding: 3px 0;
-}
+  .cdip_image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  .cdi__text {
+    max-width: 60px;
+    text-align: center;
+    font-size: 12px;
+    line-height: 12px;
+    padding: 3px 0;
+  }
   @media(max-width: 759px) {
     .cdi__text {
       font-size: 10px;
@@ -226,208 +306,231 @@
 </style>
 
 <script>
-  // Replace jQuery selectors with vanilla JavaScript
-  calculateDiscount();
-
-  function calculateProgress(currentVal, targetVal) {
-      var progressBar = document.querySelectorAll('.cart-discountThreshold__progress');
-      var progressNum = document.querySelectorAll('.cart-discount__num');
-      var progressOuter = document.querySelectorAll('.cart-discount__numOuter');
-      var successMsg = document.querySelectorAll('.cart-discount__success');
-      console.log(currentVal);
-      if(currentVal <= {{settings.discount_1}}) {
-        var result = Math.round(30 * currentVal / {{settings.discount_1}});
-      } else if (currentVal > {{settings.discount_1}} && currentVal < {{settings.discount_2}}) {
-        var result = Math.round(65 * currentVal / {{settings.discount_2}});
-      } else {
-        var result = Math.round(100 * currentVal / targetVal);
-      }
-      progressBar.forEach(function(el){
-        el.setAttribute('style', "width: ".concat(result, "%"));
-      });
-      var newProgressNum = targetVal - currentVal;
-      if(newProgressNum <= 0){
-        successMsg.forEach(function(el){
-          el.style.display = 'block';
-        });
-        progressOuter.forEach(function(el){
-          el.style.display = 'none';
-        });
-        progressNum.forEach(function(el){
-          el.textContent = newProgressNum;
-        });
-      } else {
-        successMsg.forEach(function(el){
-          el.style.display = 'none';
-        });
-        progressOuter.forEach(function(el){
-          el.style.display = 'block';
-        });
-        progressNum.forEach(function(el){
-          el.textContent = newProgressNum;
-        });
-      }
-  }
-
-  function calculateDiscount(){
-    const loadingBar = document.querySelector('.cart-drawer .loading__spinner');
-    loadingBar.classList.remove('hidden');
+  {% comment %} function calculateProgress(currentVal, targetVal) {
+    console.log('calculateProgress starting with:', { currentVal, targetVal });
     
-    fetch('/cart.js')
-      .then(response => response.json())
-      .then(data => {
-        let vartotal_cartPrice = data.total_price;
-        let total_price = formatMoney(vartotal_cartPrice);
-        total_price = parseFloat(total_price.replace(/[^0-9.-]+/g,""));
-        let variantData = [];
-        let items = data.items;
-
-        const discountItems = document.querySelectorAll('.cart_discount__item');
-        if (discountItems.length > 0) {
-          discountItems.forEach(discount_item => {
-            let price = parseFloat(discount_item.getAttribute('data-price'));
-            let id = parseInt(discount_item.getAttribute('data-id'));
-            let alreadyExist = false;
-            
-            if (id !== null) {
-              items.forEach(item => {
-                let varaint_id = parseInt(item.variant_id);
-                if (varaint_id == id) {
-                  alreadyExist = true;
-                  document.querySelector(`.cart_discount__item[data-id="${id}"]`).classList.add("active_discount");
-                }
-              });
-            }
-
-            if (alreadyExist == false && total_price >= price) {
-              let dataObject = {
-                id: id,
-                qty: 1
-              };
-              if (!variantData.some(variant => variant.id === id)) {
-                variantData.push(dataObject);
-              }
-            } else if (alreadyExist == true && price >= total_price) {
-              let dataObject = {
-                id: id,
-                qty: 0
-              };
-              variantData.push(dataObject);
-            }
-          });
-
-          if(variantData.length == 0) {
-            loadingBar.classList.add('hidden');
-          }
-          
-          // Function to add items to the cart
-          async function addItemsToCart(variantData) {
-            for (let index = 0; index < variantData.length; index++) {
-              const { id, qty } = variantData[index];
-              const formData = { items: [{ id: id, quantity: qty }] };
-          
-              try {
-                if (qty == 1) {
-                  let response = await fetch(window.Shopify.routes.root + 'cart/add.js', {
-                    method: 'POST',
-                    headers: {
-                      'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(formData)
-                  });
-          
-                  const data = await response.json();
-                  if (data.items) {
-                    document.querySelector(`.cart_discount__item[data-id="${id}"]`).classList.add("active_discount");
-                  } else if (data.status === 422) {
-                    alert(data.message);
-                  }
-                } else if (qty == 0) {
-                  const response = await fetch('/cart/change.js', {
-                    method: 'POST',
-                    headers: {
-                      'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                      'id': id,
-                      'quantity': qty
-                    })
-                  });
-                  
-                  const data = await response.json();
-                  document.querySelector(`.cart_discount__item[data-id="${id}"]`).classList.remove("active_discount");
-                }
-              } catch (error) {
-                console.error(`Error adding item with ID ${id}:`, error);
-              }
-          
-              if (index === variantData.length - 1) {
-                // Fetch updated cart data
-                fetch(window.location.href)
-                  .then((response) => response.text())
-                  .then((responseText) => {
-                    const htmlData = new DOMParser().parseFromString(responseText, 'text/html');
-                    const cartItemshtml = htmlData.querySelector('#CartDrawer .cart-drawer__form');
-                    document.querySelector('#CartDrawer .totals__total-value').textContent = 
-                      htmlData.querySelector('#CartDrawer .totals__total-value').textContent;
-                    document.querySelector('.cart-count-bubble').innerHTML = 
-                      htmlData.querySelector('.cart-count-bubble').innerHTML;
-                    document.querySelector('#CartDrawer .cart__drawer--form').innerHTML = cartItemshtml.innerHTML;
-                  })
-                  .catch(e => {
-                    console.error(e);
-                  })
-                  .finally(() => {
-                    loadingBar.classList.add('hidden');
-                    const discount_items = document.querySelectorAll('.cart_discount__item:not(.active_discount)');
-                    
-                    fetch('/cart.js')
-                      .then(response => response.json())
-                      .then(data => {
-                        let vartotal_cartPrice = data.total_price;
-                        let total_price_new = formatMoney(vartotal_cartPrice);
-                        total_price_new = parseFloat(total_price_new.replace(/[^0-9.-]+/g,""));
-                        
-                        if (total_price_new == 0) {
-                          document.querySelectorAll(".cart-discount__wrapper")[0].style.display = 'none';
-                        } else if (total_price_new >= {{settings.discount_2}}) {
-                          document.querySelectorAll(".cart-discount__wrapper")[0].style.display = 'block';
-                          calculateProgress(total_price_new, {{settings.discount_2}}); 
-                        } else {
-                          calculateProgress(total_price, {{settings.discount_total_price}});
-                        }
-                        
-                        discount_items.forEach(newitem => {
-                          const newItemPrice = parseInt(newitem.getAttribute('data-price'));
-                          if(total_price_new > newItemPrice) {
-                            console.log(newItemPrice + "newItemPrice");
-                            calculateDiscount();
-                          }
-                        });
-                      });
-                  });
-              }
-            }
-          }
-          
-          // Call the function to process the variantData array
-          addItemsToCart(variantData);
-        }
-        
-        if (total_price == 0) {
-          document.querySelectorAll(".cart-discount__wrapper")[0].style.display = 'none';
-        } else if (total_price >= {{settings.discount_2}}) {
-          document.querySelectorAll(".cart-discount__wrapper")[0].style.display = 'block';
-          calculateProgress(total_price, {{settings.discount_2}}); 
-        } else {
-          calculateProgress(total_price, {{settings.discount_total_price}}); 
-        }
-      });
+    // Get progress bars
+    const progressBar = document.querySelectorAll('.cart-discountThreshold__progress');
+    console.log('Found progress bars:', progressBar.length);
+    
+    // Calculate percentage (0-100)
+    const percentage = Math.min(Math.round((currentVal / targetVal) * 100), 100);
+    console.log('Calculated percentage:', percentage);
+  
+    // Update each progress bar's width
+    progressBar.forEach((el, index) => {
+      console.log(`Setting width on progress bar ${index} to ${percentage}%`);
+      el.style.width = `${percentage}%`;
+    });
+  
+    // Update text elements if they exist
+    const progressNum = document.querySelectorAll('.cart-discount__num');
+    const progressOuter = document.querySelectorAll('.cart-discount__numOuter');
+    const successMsg = document.querySelectorAll('.cart-discount__success');
+  
+    const remaining = targetVal - currentVal;
+    
+    if (remaining <= 0) {
+      successMsg.forEach(el => el.style.display = 'block');
+      progressOuter.forEach(el => el.style.display = 'none');
+      progressNum.forEach(el => el.textContent = '0');
+    } else {
+      successMsg.forEach(el => el.style.display = 'none');
+      progressOuter.forEach(el => el.style.display = 'block');
+      progressNum.forEach(el => el.textContent = (remaining / 100).toFixed(2));
+    }
   }
 
+  let isCalculatingDiscount = false;
+
+  async function calculateDiscount() {
+    if (isCalculatingDiscount) {
+      console.log('Calculate discount already in progress, skipping');
+      return;
+    }
+  
+    isCalculatingDiscount = true;
+    console.log('Starting calculateDiscount');
+    
+    try {
+      const response = await fetch('/cart.js');
+      const data = await response.json();
+      
+      const vartotal_cartPrice = data.total_price;
+      let total_price = formatMoney(vartotal_cartPrice);
+      total_price = parseFloat(total_price.replace(/[^0-9.-]+/g,""));
+      
+      console.log('Current cart total:', total_price);
+  
+      // Process discount items first
+      const discountItems = document.querySelectorAll('.cart_discount__item');
+      if (discountItems.length > 0) {
+        const variantUpdates = [];
+        
+        discountItems.forEach(discount_item => {
+          const price = parseFloat(discount_item.getAttribute('data-price'));
+          const id = parseInt(discount_item.getAttribute('data-id'));
+          console.log('Checking discount item:', { id, price, total_price });
+          
+          const exists = data.items.some(cartItem => parseInt(cartItem.variant_id) === id);
+          
+          if (!exists && total_price >= price) {
+            console.log('Adding discount item:', id);
+            variantUpdates.push({ id, qty: 1 });
+          } else if (exists && total_price < price) {
+            console.log('Removing discount item:', id);
+            variantUpdates.push({ id, qty: 0 });
+          }
+  
+          // Update active state
+          if (total_price >= price) {
+            discount_item.classList.add('active_discount');
+          } else {
+            discount_item.classList.remove('active_discount');
+          }
+        });
+  
+        if (variantUpdates.length > 0) {
+          await addItemsToCart(variantUpdates);
+        }
+      }
+  
+      // Update progress bar and visibility
+      const cartDiscountWrapper = document.querySelector(".cart-discount__wrapper");
+      if (cartDiscountWrapper) {
+        if (total_price === 0) {
+          cartDiscountWrapper.style.display = 'none';
+        } else {
+          cartDiscountWrapper.style.display = 'block';
+          
+          // Get thresholds from your settings
+          const discount1 = {{ settings.discount_1 | default: 200 }};
+          const discount2 = {{ settings.discount_2 | default: 400 }};
+          
+          // Calculate progress based on thresholds
+          if (total_price <= discount1) {
+            calculateProgress(total_price, discount1);
+          } else if (total_price > discount1 && total_price < discount2) {
+            calculateProgress(total_price, discount2);
+          } else {
+            calculateProgress(total_price, discount2);
+          }
+        }
+      }
+  
+    } catch (error) {
+      console.error('Error in calculateDiscount:', error);
+    } finally {
+      if (document.querySelector('.cart-drawer .loading__spinner')) {
+        document.querySelector('.cart-drawer .loading__spinner').classList.add('hidden');
+      }
+      isCalculatingDiscount = false;
+    }
+  }
+
+  async function addItemsToCart(variantData) {
+    console.log('Adding items to cart:', variantData);
+    
+    for (const { id, qty } of variantData) {
+      try {
+        if (qty === 1) {
+          const response = await fetch(`${window.Shopify.routes.root}cart/add.js`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ items: [{ id, quantity: qty }] })
+          });
+          
+          if (response.ok) {
+            document.querySelector(`.cart_discount__item[data-id="${id}"]`)?.classList.add('active_discount');
+          }
+        } else if (qty === 0) {
+          const response = await fetch('/cart/change.js', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id, quantity: qty })
+          });
+          
+          if (response.ok) {
+            document.querySelector(`.cart_discount__item[data-id="${id}"]`)?.classList.remove('active_discount');
+          }
+        }
+      } catch (error) {
+        console.error(`Error updating item ${id}:`, error);
+      }
+    }
+
+    // Update cart UI
+    await updateCartUI();
+  }
+  
+  async function updateCartUI() {
+    try {
+      const response = await fetch(window.location.href);
+      const responseText = await response.text();
+      const htmlData = new DOMParser().parseFromString(responseText, 'text/html');
+      
+      // Update cart form
+      const cartForm = htmlData.querySelector('#CartDrawer .cart-drawer__form');
+      if (cartForm) {
+        document.querySelector('#CartDrawer .cart__drawer--form').innerHTML = cartForm.innerHTML;
+      }
+  
+      // Update totals
+      const newTotal = htmlData.querySelector('#CartDrawer .totals__total-value')?.textContent;
+      if (newTotal) {
+        document.querySelector('#CartDrawer .totals__total-value').textContent = newTotal;
+      }
+  
+      // Update cart count
+      const newCount = htmlData.querySelector('.cart-count-bubble')?.innerHTML;
+      if (newCount) {
+        document.querySelector('.cart-count-bubble').innerHTML = newCount;
+      }
+  
+      // Recalculate discount after UI update
+      console.log("Recalculating discount after UI update")
+      await getUpdatedCartTotal();
+  
+    } catch (error) {
+      console.error('Error updating cart UI:', error);
+    }
+  }
+  
+  async function getUpdatedCartTotal() {
+    try {
+      const response = await fetch('/cart.js');
+      const data = await response.json();
+      const total_price = formatMoney(data.total_price);
+      const parsedTotal = parseFloat(total_price.replace(/[^0-9.-]+/g,""));
+  
+      if (parsedTotal === 0) {
+        document.querySelector(".cart-discount__wrapper")?.style.setProperty('display', 'none');
+      } else if (parsedTotal >= {{ settings.discount_2 }}) {
+        document.querySelector(".cart-discount__wrapper")?.style.setProperty('display', 'block');
+        calculateProgress(parsedTotal, {{ settings.discount_2 }});
+      } else {
+        calculateProgress(parsedTotal, {{ settings.discount_total_price }});
+      }
+  
+      const inactiveDiscounts = document.querySelectorAll('.cart_discount__item:not(.active_discount)');
+      inactiveDiscounts.forEach(item => {
+        const price = parseInt(item.getAttribute('data-price'));
+        if (parsedTotal > price) {
+          calculateDiscount();
+        }
+      });
+  
+    } catch (error) {
+      console.error('Error getting updated cart total:', error);
+    }
+  }
+  
   function formatMoney(cents) {
-    let dollars = cents / 100;
-    let centsPart = (cents % 100).toFixed(2);
+    const dollars = cents / 100;
+    const centsPart = (cents % 100).toFixed(2);
     return "{{ cart.currency.symbol }}" + dollars + "." + (centsPart < 10 ? "0" : "");
   }
+  
+  // Initialize on load
+  document.addEventListener('DOMContentLoaded', calculateDiscount); {% endcomment %}
 </script>

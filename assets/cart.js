@@ -53,7 +53,7 @@ class CartUpdateManager {
     this.isUpdating = false;
     this.updateQueue = [];
     this.lastUpdateTime = 0;
-    this.MIN_UPDATE_INTERVAL = 500; // Minimum time between updates in ms
+    this.MIN_UPDATE_INTERVAL = 500;
   }
 
   canUpdate() {
@@ -84,6 +84,11 @@ class CartUpdateManager {
   }
 }
 
+// Update lastCartUpdate whenever cart changes
+document.addEventListener('cart:updated', () => {
+  lastCartUpdate = Date.now();
+});
+
 // Define CartItems only once
 if (!customElements.get('cart-items')) {
   class CartItems extends HTMLElement {
@@ -93,7 +98,6 @@ if (!customElements.get('cart-items')) {
       this.lineItemStatusElement = document.getElementById('shopping-cart-line-item-status') || 
                                   document.getElementById('CartDrawer-LineItemStatus');
 
-      // Debounce the change handler
       this.debouncedOnChange = debounce((event) => {
         this.onChange(event);
       }, 500);
@@ -102,18 +106,15 @@ if (!customElements.get('cart-items')) {
     }
 
     connectedCallback() {
-      // Clean up any existing subscription
       if (this.cartUpdateUnsubscriber) {
         this.cartUpdateUnsubscriber();
       }
 
-      // Add new subscription with debouncing
       this.cartUpdateUnsubscriber = subscribe(PUB_SUB_EVENTS.cartUpdate, (event) => {
         if (event.source === 'cart-items') return;
         this.updateManager.queueUpdate(() => this.onCartUpdate());
       });
 
-      // Initialize variant handlers once
       this.initializeVariantHandlers();
     }
 
@@ -121,7 +122,6 @@ if (!customElements.get('cart-items')) {
       if (this.cartUpdateUnsubscriber) {
         this.cartUpdateUnsubscriber();
       }
-      // Clean up variant handlers
       this.removeVariantHandlers();
     }
 
@@ -158,11 +158,14 @@ if (!customElements.get('cart-items')) {
           this.innerHTML = sourceQty.innerHTML;
         }
 
-        // Call calculate discount only once
-        await this.updateManager.queueUpdate(() => calculateDiscount());
-        
-        // Initialize variant handlers after update
         this.initializeVariantHandlers();
+
+        // Call calculateDiscount and ensure it's queued properly
+        // if (typeof calculateDiscount === 'function') {
+        //   await this.updateManager.queueUpdate(async () => {
+        //     await calculateDiscount();
+        //   });
+        // }
       } catch (e) {
         console.error('Cart update failed:', e);
       }
@@ -238,39 +241,83 @@ if (!customElements.get('cart-items')) {
     }
 
     async updateQuantity(line, quantity, name, variantId) {
-      console.log('updateQuantity called with:', { line, quantity, name, variantId });
+      console.log('Updating quantity:', { line, quantity, name, variantId });
       
       await this.updateManager.queueUpdate(async () => {
-        console.log('Starting update process for line:', line);
         this.enableLoading(line);
         
         try {
-          const sections = this.getSectionsToRender().map((section) => section.section);
-          console.log('Sections to render:', sections);
-          
           const body = JSON.stringify({
             line,
             quantity,
-            sections,
+            sections: this.getSectionsToRender().map((section) => section.section),
             sections_url: window.location.pathname,
           });
-          console.log('Request body:', body);
-  
+
           const response = await fetch(`${routes.cart_change_url}`, { ...fetchConfig(), ...{ body } });
-          console.log('Response status:', response.status);
-          
           const state = await response.json();
-          console.log('Response state:', state);
-  
+
+          if (state.errors) {
+            this.handleQuantityUpdateError(line, state.errors);
+            return;
+          }
+
+          // Update cart state and UI
           await this.handleQuantityUpdateResponse(state, line, name, variantId);
+
+          // Ensure calculateDiscount runs after cart update
+          // if (typeof calculateDiscount === 'function') {
+          //   await calculateDiscount();
+          // }
+
         } catch (error) {
           console.error('Error in updateQuantity:', error);
           this.handleQuantityUpdateError(line);
         } finally {
           this.disableLoading(line);
-          console.log('Update process completed');
         }
       });
+    }
+
+    handleQuantityUpdateResponse(parsedState, line, name, variantId) {
+      if (!parsedState) return;
+    
+      this.classList.toggle('is-empty', parsedState.item_count === 0);
+      const cartDrawerWrapper = document.querySelector('cart-drawer');
+      const cartFooter = document.getElementById('main-cart-footer');
+    
+      if (cartFooter) cartFooter.classList.toggle('is-empty', parsedState.item_count === 0);
+      if (cartDrawerWrapper) cartDrawerWrapper.classList.toggle('is-empty', parsedState.item_count === 0);
+    
+      this.getSectionsToRender().forEach((section) => {
+        const elementToReplace = document.getElementById(section.id)?.querySelector(section.selector) || 
+                               document.getElementById(section.id);
+        if (elementToReplace) {
+          elementToReplace.innerHTML = this.getSectionInnerHTML(
+            parsedState.sections[section.section],
+            section.selector
+          );
+        }
+      });
+    
+      publish(PUB_SUB_EVENTS.cartUpdate, {
+        source: 'cart-items',
+        cartData: parsedState,
+        variantId: variantId
+      });
+    
+      // Add delay to ensure DOM is updated before calculating discount
+      // setTimeout(async () => {
+      //   if (typeof calculateDiscount === 'function') {
+      //     console.log('Calling calculateDiscount after quantity update');
+      //     try {
+      //       await calculateDiscount();
+      //       console.log('calculateDiscount completed after quantity update');
+      //     } catch (error) {
+      //       console.error('Error in calculateDiscount:', error);
+      //     }
+      //   }
+      // }, 100);
     }
 
     getSectionsToRender() {
@@ -384,6 +431,10 @@ if (!customElements.get('cart-items')) {
         cartData: parsedState,
         variantId: variantId
       });
+    
+      // if (typeof calculateDiscount === 'function') {
+      //   calculateDiscount();
+      // }
     }
 
     handleQuantityUpdateError(line) {
@@ -397,64 +448,57 @@ if (!customElements.get('cart-items')) {
 
   customElements.define('cart-items', CartItems);
 }
-
-// Replace your current CartRemoveButton with this debugged version
+// Modify CartRemoveButton to trigger proper events
 if (!customElements.get('cart-remove-button')) {
   class CartRemoveButton extends HTMLElement {
     constructor() {
       super();
-      console.log('CartRemoveButton initialized');
+      this.setupEventListeners();
+    }
 
-      const handleRemove = (event) => {
-        console.log('Remove button clicked');
-        console.log('Event target:', event.target);
-        console.log('Button data-index:', this.dataset.index);
-        
+    setupEventListeners() {
+      const handleRemove = async (event) => {
         event.preventDefault();
         event.stopPropagation();
 
-        const cartItems = this.closest('cart-items') || this.closest('cart-drawer-items');
-        console.log('Found cartItems:', cartItems);
-        console.log('CartItems tagName:', cartItems?.tagName);
+        console.log('Starting cart item removal process');
         
-        if (!cartItems) {
-          console.error('No cart-items found');
-          return;
-        }
+        const cartItems = this.closest('cart-items') || this.closest('cart-drawer-items');
+        if (!cartItems) return;
 
         const line = this.dataset.index;
-        console.log('Line to remove:', line);
-        
-        if (!line) {
-          console.error('No line index found');
-          return;
-        }
+        if (!line) return;
 
-        console.log('Calling updateQuantity with line:', line);
         try {
-          cartItems.updateQuantity(line, 0);
+          // Update cart
+          await cartItems.updateQuantity(line, 0);
+          
+          console.log('Cart item removed, triggering update event');
+          
+          // Dispatch cart update event
+          document.dispatchEvent(new CustomEvent('cart:updated', {
+            bubbles: true,
+            detail: { source: 'remove-button' }
+          }));
+
+          // If calculateDiscount exists, call it after a delay
+          if (typeof calculateDiscount === 'function') {
+            setTimeout(async () => {
+              await calculateDiscount();
+            }, 1000);
+          }
+
         } catch (error) {
-          console.error('Error in updateQuantity:', error);
+          console.error('Error in removal process:', error);
         }
       };
 
-      // Listen for clicks on both the component and button
-      this.addEventListener('click', (event) => {
-        console.log('Outer component clicked');
-        handleRemove(event);
-      });
-
+      // Add click handlers
+      this.addEventListener('click', handleRemove);
+      
       const button = this.querySelector('button');
       if (button) {
-        console.log('Inner button found');
-        button.addEventListener('click', (event) => {
-          console.log('Inner button clicked');
-          event.preventDefault();
-          event.stopPropagation();
-          handleRemove(event);
-        });
-      } else {
-        console.log('No inner button found');
+        button.addEventListener('click', handleRemove);
       }
     }
   }
@@ -491,3 +535,4 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 });
+

@@ -274,14 +274,14 @@
 
   <!-- Load remaining scripts -->
   {%- if settings.predictive_search_enabled -%}
-    <script src="{{ 'predictive-search.js' | asset_url }}" defer></script>
+    <script src="{{ 'predictive-search.js' | asset_url }}" defer="defer"></script>
   {%- endif -%}
 
   <!-- Core scripts with proper loading order -->
-  <script src="{{ 'product-form.js' | asset_url }}" defer></script>
-  <script src="{{ 'video-slider-init.js' | asset_url }}" defer></script>
-  <script src="{{ 'custom.js' | asset_url }}" defer></script>
-
+  <script src="{{ 'product-form.js' | asset_url }}" defer="defer"></script>
+  <script src="{{ 'video-slider-init.js' | asset_url }}" defer="defer"></script>
+  <script src="{{ 'custom.js' | asset_url }}" defer="defer"></script>
+{% comment %} 
   <script>
 
     setInterval(function () {
@@ -330,7 +330,7 @@
         calculateProgress(data.total_price, {{settings.cart_free_shipping_amount | times: 100}} );
       });
     }, 600); 
-  </script>
+  </script> {% endcomment %}
 
 </body>
 </html>

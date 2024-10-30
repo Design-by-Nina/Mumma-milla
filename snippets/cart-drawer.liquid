@@ -758,11 +758,11 @@ button.drawer__close {
     }
 
     if (!isIE()) return;
-    const cartSubmitInput = document.createElement('input');
-    cartSubmitInput.setAttribute('name', 'checkout');
-    cartSubmitInput.setAttribute('type', 'hidden');
-    document.querySelector('#cart').appendChild(cartSubmitInput);
-    document.querySelector('#checkout').addEventListener('click', function (event) {
+      const cartSubmitInput = document.createElement('input');
+      cartSubmitInput.setAttribute('name', 'checkout');
+      cartSubmitInput.setAttribute('type', 'hidden');
+      document.querySelector('#cart').appendChild(cartSubmitInput);
+      document.querySelector('#checkout').addEventListener('click', function (event) {
       document.querySelector('#cart').submit();
     });
   });
